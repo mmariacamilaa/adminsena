@@ -1,49 +1,60 @@
+
 <?php
 
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Computer;
 use Illuminate\Http\Request;
 
 class ComputerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return response()->json(Computer::all(), 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $datos = $request->validate([
+            'number' => 'required|string|max:50',
+            'brand' => 'required|string|max:100',
+        ]);
+
+        $computador = Computer::create($datos);
+
+        return response()->json($computador, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
-        //
+        $computador = Computer::findOrFail($id);
+
+        return response()->json($computador, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        //
+        $computador = Computer::findOrFail($id);
+
+        $datos = $request->validate([
+            'number' => 'required|string|max:50',
+            'brand' => 'required|string|max:100',
+        ]);
+
+        $computador->update($datos);
+
+        return response()->json($computador, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        //
+        $computador = Computer::findOrFail($id);
+        $computador->delete();
+
+        return response()->json([
+            'mensaje' => 'Computador eliminado correctamente'
+        ], 200);
     }
 }
+

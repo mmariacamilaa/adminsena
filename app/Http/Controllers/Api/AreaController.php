@@ -8,77 +8,43 @@ use Illuminate\Http\Request;
 
 class AreaController extends Controller
 {
-
     public function index()
     {
-        $areas = Area::all();
-
-        return response()->json($areas);
+        return response()->json(Area::all());
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $datos = $request->validate([
             'name' => 'required|string|max:255',
         ]);
 
-        $area = Area::create([
-            'name' => $request->name,
+        $area = Area::create($datos);
+
+        return response()->json($area, 201);
+    }
+
+    public function show(string $id)
+    {
+        return response()->json(Area::findOrFail($id));
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $area = Area::findOrFail($id);
+
+        $datos = $request->validate([
+            'name' => 'required|string|max:255',
         ]);
 
-        return response()->json([
-            'mensaje' => 'Area creada correctamente',
-            'area' => $area
-        ], 201);
-    }
-    
-    public function show($id)
-    {
-        $area = Area::find($id);
-
-        if (!$area) {
-            return response()->json([
-                'mensaje' => 'Area no encontrada'
-            ], 404);
-        }
+        $area->update($datos);
 
         return response()->json($area);
     }
-    
-    public function update(Request $request, $id)
+
+    public function destroy(string $id)
     {
-        $area = Area::find($id);
-
-        if (!$area) {
-            return response()->json([
-                'mensaje' => 'Area no encontrada'
-            ], 404);
-        }
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-
-        $area->update([
-            'name' => $request->name,
-        ]);
-
-        return response()->json([
-            'mensaje' => 'Area actualizada correctamente',
-            'area' => $area
-        ]);
-    }
-
-    public function destroy($id)
-    {
-        $area = Area::find($id);
-
-        if (!$area) {
-            return response()->json([
-                'mensaje' => 'Area no encontrada'
-            ], 404);
-        }
-
+        $area = Area::findOrFail($id);
         $area->delete();
 
         return response()->json([
